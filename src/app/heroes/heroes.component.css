@@ -21,6 +21,11 @@
   left: .1em;
 }
 
+.akw {
+  display: grid;
+  grid-template-columns: auto 1fr;
+}
+
 .heroes a {
   color: #333;
   text-decoration: none;

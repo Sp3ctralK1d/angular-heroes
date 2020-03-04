@@ -14,17 +14,23 @@ import { catchError, map, tap } from 'rxjs/operators'
 export class HeroService {
   
   private heroesUrl = 'api/heroes'
+
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
   }
 
+  
+  constructor(
+    private messageService: MessageService,
+    private http: HttpClient
+    ){}
+    
   private log(message: string){
     this.messageService.add(`HeroService: ${message}`)
   }
 
   private handleError<T> (operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
-
 
       console.error(error)
 
@@ -33,13 +39,7 @@ export class HeroService {
       return of(result as T)
     }
   }
-  
-  constructor(
-    private messageService: MessageService,
-    private http: HttpClient
-    ){}
     
-
   getHeroes(): Observable<Hero[]> {
     return this.http.get<Hero[]>(this.heroesUrl)
       .pipe(
@@ -50,7 +50,7 @@ export class HeroService {
 
   getHero(id: number): Observable<Hero> {
     const url = `${this.heroesUrl}/${id}`
-    
+                  
     return this.http.get<Hero>(url).pipe(
       tap(_ => this.log(`fetched hero id=${id}`)),
       catchError(this.handleError<Hero>(`getHero id=${id}`))
@@ -74,7 +74,7 @@ export class HeroService {
   deleteHero(hero: Hero | number ): Observable<Hero> {
     const id = typeof hero === 'number' ? hero : hero.id
     const url = `${this.heroesUrl}/${id}`
-
+    
     return this.http.delete<Hero>(url, this.httpOptions).pipe(
       tap(_ => this.log(`deleted hero id=${id}`)),
       catchError(this.handleError<Hero>('deleteHero'))
